@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>學習歷程 PDF 壓檔神器</title>
+    <title>學習歷程 PDF 壓檔神器 - RNSTUDIO</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- pdf.js & jsPDF -->
@@ -162,9 +162,22 @@
                 <p class="text-xs font-bold text-emerald-400" id="res-status">✅ 成功小於 4.0MB，可順利上傳</p>
             </div>
 
+            <!-- iOS Save Download Guide Notice -->
+            <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3 text-xs space-y-1.5 text-slate-300">
+                <div class="flex items-center gap-1.5 font-bold text-indigo-400">
+                    <span>📱</span>
+                    <span>手機/iOS 下載儲存說明：</span>
+                </div>
+                <ol class="list-decimal list-inside text-[11px] text-slate-400 space-y-1 pl-1">
+                    <li>點擊下方 <strong class="text-slate-200">「開啟 / 下載 PDF」</strong> 按鈕開啟檔案。</li>
+                    <li>點選瀏覽器下方選單的 <strong class="text-slate-200">「分享圖示 (或選單 ⋯ )」</strong>。</li>
+                    <li>滑至下方選擇 <strong class="text-indigo-300 font-semibold">「儲存到檔案」</strong> 即可上傳至學習歷程系統。</li>
+                </ol>
+            </div>
+
             <div class="flex gap-2">
-                <a id="download-btn" href="#" download="compressed.pdf" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-center shadow-lg shadow-emerald-600/20 active:scale-[0.99] transition-all text-xs flex justify-center items-center gap-1.5">
-                    <span>⬇️ 下載 PDF</span>
+                <a id="download-btn" href="#" target="_blank" download="compressed.pdf" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-center shadow-lg shadow-emerald-600/20 active:scale-[0.99] transition-all text-xs flex justify-center items-center gap-1.5">
+                    <span>⬇️ 開啟 / 下載 PDF</span>
                 </a>
                 <button id="reset-btn" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-2.5 px-4 rounded-xl text-xs transition-all">
                     再壓一個
@@ -174,9 +187,10 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="text-center py-4 text-[10px] text-slate-500 px-4">
-        所有檔案處理均在您的裝置本地端完成，不會上傳任何資料至伺服器。
+    <!-- Footer with RNSTUDIO Branding -->
+    <footer class="text-center py-5 text-xs text-slate-500 px-4 space-y-1 border-t border-slate-800/80">
+        <p class="font-medium text-slate-400">Developed by <span class="font-bold text-indigo-400 tracking-wider">RNSTUDIO</span></p>
+        <p class="text-[10px] text-slate-600">所有檔案處理均在您的裝置本地端完成，不會上傳任何資料至伺服器。</p>
     </footer>
 
     <!-- JS Logic -->
