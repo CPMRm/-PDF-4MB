@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>學習歷程 PDF 壓檔 - RNSTUDIO</title>
+    <title>學習歷程全能工具箱 - RNSTUDIO</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- pdf.js & jsPDF -->
@@ -20,168 +20,242 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white pb-safe">
 
     <!-- Top Header -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
-        <div class="max-w-2xl mx-auto px-4 py-3.5 flex justify-between items-center">
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-2xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-base shadow-sm">
                     🎓
                 </div>
                 <div>
-                    <h1 class="text-base font-bold text-white leading-tight">學習歷程 PDF 壓檔</h1>
-                    <p class="text-[11px] text-slate-400">100% 本地運行 · 專為 4MB 限制優化</p>
+                    <h1 class="text-base font-bold text-white leading-tight">學習歷程全能工具箱</h1>
+                    <p class="text-[11px] text-slate-400">100% 本地運算 · RNSTUDIO</p>
                 </div>
             </div>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                檔案保護
-            </span>
+            <button id="popout-btn" title="在新分頁開啟目前工具" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">
+                <span>↗️ 新分頁開啟</span>
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="max-w-2xl mx-auto px-4 flex gap-1 border-t border-slate-800/60 pt-1">
+            <button onclick="switchTab('compressor')" id="tab-compressor" class="tab-btn flex-1 py-2 text-center text-xs font-bold border-b-2 border-indigo-500 text-indigo-400 transition-all">
+                ⚡ PDF 壓檔
+            </button>
+            <button onclick="switchTab('img2pdf')" id="tab-img2pdf" class="tab-btn flex-1 py-2 text-center text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                🖼️ 圖片轉 PDF
+            </button>
+            <button onclick="switchTab('counter')" id="tab-counter" class="tab-btn flex-1 py-2 text-center text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+                📝 字數統計器
+            </button>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-2xl mx-auto px-4 py-5 flex-grow w-full space-y-4">
+    <main class="max-w-2xl mx-auto px-4 py-5 flex-grow w-full">
         
-        <!-- Info Banner -->
-        <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-3.5 flex items-start gap-3 backdrop-blur-sm">
-            <span class="text-indigo-400 text-lg leading-none mt-0.5">💡</span>
-            <div class="text-xs text-indigo-200/90 leading-relaxed">
-                高中學習歷程上傳上限為 <strong class="text-amber-400 font-semibold">4.0 MB</strong>。本工具會自動微調畫質，確保檔案在不失真的前提下順利通過平台審核。
-            </div>
-        </div>
-
-        <!-- Upload Card -->
-        <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/60 bg-slate-800/40 hover:bg-slate-800/80 transition-all duration-200 rounded-2xl p-6 text-center cursor-pointer relative group">
-            <input type="file" id="file-input" accept="application/pdf" class="hidden">
-            <div class="flex flex-col items-center justify-center space-y-2.5">
-                <div class="w-12 h-12 bg-indigo-600/10 group-hover:bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/20 flex items-center justify-center text-2xl transition-transform group-hover:scale-105">
-                    📄
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-slate-200">點擊上傳或拖曳 PDF 檔案至此</p>
-                    <p class="text-[11px] text-slate-400 mt-0.5">支援簡報、掃描頁面與混合文字檔</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Config Section -->
-        <div id="config-section" class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 sm:p-5 backdrop-blur-sm hidden space-y-4">
-            
-            <!-- File Badge -->
-            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                <div class="truncate mr-3">
-                    <p class="text-xs font-semibold text-slate-200 truncate" id="file-name">filename.pdf</p>
-                    <p class="text-[11px] text-slate-400 mt-0.5">原始大小：<span id="file-size" class="text-indigo-400 font-medium">0 MB</span></p>
-                </div>
-                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">PDF</span>
-            </div>
-
-            <!-- Target Selection -->
-            <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-2">請選擇壓縮目標</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="target-size" value="3.8" checked class="peer hidden">
-                        <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/40 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 text-center transition-all">
-                            <p class="text-xs font-bold text-slate-200">≤ 3.8 MB</p>
-                            <p class="text-[10px] text-indigo-400 font-medium mt-0.5">推薦首選</p>
-                        </div>
-                    </label>
-
-                    <label class="cursor-pointer">
-                        <input type="radio" name="target-size" value="2.0" class="peer hidden">
-                        <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/40 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 text-center transition-all">
-                            <p class="text-xs font-bold text-slate-200">≤ 2.0 MB</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">高壓縮率</p>
-                        </div>
-                    </label>
-
-                    <label class="cursor-pointer">
-                        <input type="radio" name="target-size" value="manual" class="peer hidden">
-                        <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/40 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 text-center transition-all">
-                            <p class="text-xs font-bold text-slate-200">自訂</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">進階參數</p>
-                        </div>
-                    </label>
+        <!-- ================= TAB 1: PDF COMPRESSOR ================= -->
+        <div id="view-compressor" class="space-y-4">
+            <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-3.5 flex items-start gap-3 backdrop-blur-sm">
+                <span class="text-indigo-400 text-lg leading-none mt-0.5">💡</span>
+                <div class="text-xs text-indigo-200/90 leading-relaxed">
+                    高中學習歷程上傳上限為 <strong class="text-amber-400 font-semibold">4.0 MB</strong>。本工具會自動微調畫質，確保檔案在不失真的前提下順利通過平台審核。
                 </div>
             </div>
 
-            <!-- Manual Sliders -->
-            <div id="manual-controls" class="bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/50 hidden space-y-3">
-                <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                        <span class="text-slate-400">JPEG 畫質</span>
-                        <span id="quality-val" class="font-bold text-indigo-400">0.65</span>
+            <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/60 bg-slate-800/40 hover:bg-slate-800/80 transition-all duration-200 rounded-2xl p-6 text-center cursor-pointer relative group">
+                <input type="file" id="file-input" accept="application/pdf" class="hidden">
+                <div class="flex flex-col items-center justify-center space-y-2.5">
+                    <div class="w-12 h-12 bg-indigo-600/10 group-hover:bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/20 flex items-center justify-center text-2xl transition-transform group-hover:scale-105">
+                        📄
                     </div>
-                    <input type="range" id="quality-slider" min="0.1" max="0.9" step="0.05" value="0.65" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
-                </div>
-                <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                        <span class="text-slate-400">解析度縮放</span>
-                        <span id="scale-val" class="font-bold text-indigo-400">1.2</span>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-200">點擊上傳或拖曳 PDF 檔案至此</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">支援簡報、掃描頁面與混合文字檔</p>
                     </div>
-                    <input type="range" id="scale-slider" min="0.6" max="2.0" step="0.1" value="1.2" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                 </div>
             </div>
 
-            <!-- Compress Button -->
-            <button id="compress-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-[0.99] transition-all flex justify-center items-center gap-2 text-sm">
-                <span>⚡ 開始執行壓縮</span>
-            </button>
-        </div>
-
-        <!-- Progress Indicator -->
-        <div id="progress-section" class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 hidden space-y-2">
-            <div class="flex justify-between text-xs font-medium">
-                <span class="text-slate-300" id="progress-status">正在處理頁面...</span>
-                <span id="progress-percent" class="text-indigo-400 font-bold">0%</span>
-            </div>
-            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-700/50">
-                <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-indigo-400 h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
-            </div>
-        </div>
-
-        <!-- Result Section -->
-        <div id="result-section" class="bg-slate-800/80 border border-emerald-500/30 rounded-2xl p-5 hidden space-y-4 shadow-xl backdrop-blur-md">
-            <div class="flex items-center gap-2 text-emerald-400">
-                <span class="text-lg">🎉</span>
-                <h3 class="text-sm font-bold text-white">壓縮成功！</h3>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 text-center">
-                <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50">
-                    <p class="text-[10px] text-slate-400">原始大小</p>
-                    <p class="text-sm font-bold text-slate-300 mt-0.5" id="res-orig-size">0 MB</p>
+            <div id="config-section" class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 sm:p-5 backdrop-blur-sm hidden space-y-4">
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
+                    <div class="truncate mr-3">
+                        <p class="text-xs font-semibold text-slate-200 truncate" id="file-name">filename.pdf</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">原始大小：<span id="file-size" class="text-indigo-400 font-medium">0 MB</span></p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">PDF</span>
                 </div>
-                <div class="bg-slate-900/60 p-2.5 rounded-xl border border-indigo-500/30">
-                    <p class="text-[10px] text-slate-400">壓縮後大小</p>
-                    <p class="text-base font-extrabold text-emerald-400 mt-0.5" id="res-new-size">0 MB</p>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">請選擇壓縮目標</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="target-size" value="3.8" checked class="peer hidden">
+                            <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/40 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 text-center transition-all">
+                                <p class="text-xs font-bold text-slate-200">≤ 3.8 MB</p>
+                                <p class="text-[10px] text-indigo-400 font-medium mt-0.5">推薦首選</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="target-size" value="2.0" class="peer hidden">
+                            <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/40 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 text-center transition-all">
+                                <p class="text-xs font-bold text-slate-200">≤ 2.0 MB</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">高壓縮率</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="target-size" value="manual" class="peer hidden">
+                            <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/40 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 text-center transition-all">
+                                <p class="text-xs font-bold text-slate-200">自訂</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">進階參數</p>
+                            </div>
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <div class="text-center p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <p class="text-xs font-bold text-emerald-400" id="res-status">✅ 成功小於 4.0MB，可順利上傳</p>
-            </div>
-
-            <!-- iOS Save Download Guide Notice -->
-            <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3 text-xs space-y-1.5 text-slate-300">
-                <div class="flex items-center gap-1.5 font-bold text-indigo-400">
-                    <span>📱</span>
-                    <span>手機/iOS 下載儲存說明：</span>
+                <div id="manual-controls" class="bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/50 hidden space-y-3">
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-slate-400">JPEG 畫質</span>
+                            <span id="quality-val" class="font-bold text-indigo-400">0.65</span>
+                        </div>
+                        <input type="range" id="quality-slider" min="0.1" max="0.9" step="0.05" value="0.65" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-slate-400">解析度縮放</span>
+                            <span id="scale-val" class="font-bold text-indigo-400">1.2</span>
+                        </div>
+                        <input type="range" id="scale-slider" min="0.6" max="2.0" step="0.1" value="1.2" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                    </div>
                 </div>
-                <ol class="list-decimal list-inside text-[11px] text-slate-400 space-y-1 pl-1">
-                    <li>點擊下方 <strong class="text-slate-200">「開啟 / 下載 PDF」</strong> 按鈕開啟檔案。</li>
-                    <li>點選瀏覽器下方選單的 <strong class="text-slate-200">「分享圖示 (或選單 ⋯ )」</strong>。</li>
-                    <li>滑至下方選擇 <strong class="text-indigo-300 font-semibold">「儲存到檔案」</strong> 即可上傳至學習歷程系統。</li>
-                </ol>
-            </div>
 
-            <div class="flex gap-2">
-                <a id="download-btn" href="#" target="_blank" download="compressed.pdf" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-center shadow-lg shadow-emerald-600/20 active:scale-[0.99] transition-all text-xs flex justify-center items-center gap-1.5">
-                    <span>⬇️ 開啟 / 下載 PDF</span>
-                </a>
-                <button id="reset-btn" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-2.5 px-4 rounded-xl text-xs transition-all">
-                    再壓一個
+                <button id="compress-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-[0.99] transition-all flex justify-center items-center gap-2 text-sm">
+                    <span>⚡ 開始執行壓縮</span>
                 </button>
+            </div>
+
+            <div id="progress-section" class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 hidden space-y-2">
+                <div class="flex justify-between text-xs font-medium">
+                    <span class="text-slate-300" id="progress-status">正在處理頁面...</span>
+                    <span id="progress-percent" class="text-indigo-400 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-700/50">
+                    <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-indigo-400 h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="result-section" class="bg-slate-800/80 border border-emerald-500/30 rounded-2xl p-5 hidden space-y-4 shadow-xl backdrop-blur-md">
+                <div class="flex items-center gap-2 text-emerald-400">
+                    <span class="text-lg">🎉</span>
+                    <h3 class="text-sm font-bold text-white">壓縮成功！</h3>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 text-center">
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50">
+                        <p class="text-[10px] text-slate-400">原始大小</p>
+                        <p class="text-sm font-bold text-slate-300 mt-0.5" id="res-orig-size">0 MB</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-indigo-500/30">
+                        <p class="text-[10px] text-slate-400">壓縮後大小</p>
+                        <p class="text-base font-extrabold text-emerald-400 mt-0.5" id="res-new-size">0 MB</p>
+                    </div>
+                </div>
+
+                <div class="text-center p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                    <p class="text-xs font-bold text-emerald-400" id="res-status">✅ 成功小於 4.0MB，可順利上傳</p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3 text-xs space-y-1.5 text-slate-300">
+                    <div class="flex items-center gap-1.5 font-bold text-indigo-400">
+                        <span>📱</span>
+                        <span>手機/iOS 下載儲存說明：</span>
+                    </div>
+                    <ol class="list-decimal list-inside text-[11px] text-slate-400 space-y-1 pl-1">
+                        <li>點擊下方 <strong class="text-slate-200">「開啟 / 下載 PDF」</strong> 按鈕開啟檔案。</li>
+                        <li>點選瀏覽器下方選單的 <strong class="text-slate-200">「分享圖示 (或選單 ⋯ )」</strong>。</li>
+                        <li>滑至下方選擇 <strong class="text-indigo-300 font-semibold">「儲存到檔案」</strong> 即可上傳至學習歷程系統。</li>
+                    </ol>
+                </div>
+
+                <div class="flex gap-2">
+                    <a id="download-btn" href="#" target="_blank" download="compressed.pdf" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-center shadow-lg shadow-emerald-600/20 active:scale-[0.99] transition-all text-xs flex justify-center items-center gap-1.5">
+                        <span>⬇️ 開啟 / 下載 PDF</span>
+                    </a>
+                    <button id="reset-btn" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-2.5 px-4 rounded-xl text-xs transition-all">
+                        再壓一個
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: IMAGE TO PDF ================= -->
+        <div id="view-img2pdf" class="space-y-4 hidden">
+            <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-3.5 flex items-start gap-3 backdrop-blur-sm">
+                <span class="text-indigo-400 text-lg leading-none mt-0.5">💡</span>
+                <div class="text-xs text-indigo-200/90 leading-relaxed">
+                    上傳獎狀、證書或手機拍照的學習單圖片（JPG / PNG），工具會自動調整版面尺寸並合成分頁 PDF。
+                </div>
+            </div>
+
+            <div id="img-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/60 bg-slate-800/40 hover:bg-slate-800/80 transition-all duration-200 rounded-2xl p-6 text-center cursor-pointer relative group">
+                <input type="file" id="img-input" accept="image/jpeg, image/png, image/webp" multiple class="hidden">
+                <div class="flex flex-col items-center justify-center space-y-2.5">
+                    <div class="w-12 h-12 bg-indigo-600/10 group-hover:bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/20 flex items-center justify-center text-2xl transition-transform group-hover:scale-105">
+                        🖼️
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-200">點擊選擇圖片 或 拖曳多張圖片至此</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">可一次選取多張 JPG / PNG 照片</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="img-preview-section" class="hidden space-y-4">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-300 font-semibold">已載入 <span id="img-count" class="text-indigo-400">0</span> 張圖片</span>
+                    <button id="clear-imgs-btn" class="text-slate-400 hover:text-red-400 transition-colors">清空圖片</button>
+                </div>
+
+                <div id="img-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+
+                <button id="convert-img-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-[0.99] transition-all flex justify-center items-center gap-2 text-sm">
+                    <span>⚡ 合成並轉出 PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: WORD COUNTER ================= -->
+        <div id="view-counter" class="space-y-4 hidden">
+            <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-3.5 flex items-start gap-3 backdrop-blur-sm">
+                <span class="text-indigo-400 text-lg leading-none mt-0.5">💡</span>
+                <div class="text-xs text-indigo-200/90 leading-relaxed">
+                    中央學習歷程系統限制：<strong class="text-amber-400 font-semibold">百字簡述 ≤ 100 字</strong>，<strong class="text-amber-400 font-semibold">內容簡述 ≤ 1000 字</strong>。此工具會協助計算字數並自動清除冗餘換行。
+                </div>
+            </div>
+
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-semibold text-slate-300">請貼上文字內容：</label>
+                    <button id="clean-text-btn" class="text-[11px] bg-slate-700 hover:bg-slate-600 text-slate-200 px-2.5 py-1 rounded-lg transition-colors">
+                        🧹 清除多餘空行
+                    </button>
+                </div>
+
+                <textarea id="counter-textarea" rows="8" placeholder="在此貼上您的學習歷程心得簡述..." class="w-full bg-slate-900/80 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none"></textarea>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center pt-1">
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50">
+                        <p class="text-[10px] text-slate-400">總字數 (含標點)</p>
+                        <p class="text-base font-extrabold text-indigo-400 mt-0.5" id="cnt-total">0</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50">
+                        <p class="text-[10px] text-slate-400">百字簡述狀態 (≤100)</p>
+                        <p class="text-xs font-bold text-emerald-400 mt-1" id="cnt-status-100">✅ 符合</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 col-span-2 sm:col-span-1">
+                        <p class="text-[10px] text-slate-400">千字簡述狀態 (≤1000)</p>
+                        <p class="text-xs font-bold text-emerald-400 mt-1" id="cnt-status-1000">✅ 符合</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -193,8 +267,42 @@
         <p class="text-[10px] text-slate-600">所有檔案處理均在您的裝置本地端完成，不會上傳任何資料至伺服器。</p>
     </footer>
 
-    <!-- JS Logic -->
+    <!-- Logic Script -->
     <script>
+        // --- TAB SWITCHING LOGIC ---
+        let currentTab = 'compressor';
+        function switchTab(tabId) {
+            currentTab = tabId;
+            ['compressor', 'img2pdf', 'counter'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                const tab = document.getElementById(`tab-${t}`);
+                if (t === tabId) {
+                    view.classList.remove('hidden');
+                    tab.classList.add('border-indigo-500', 'text-indigo-400');
+                    tab.classList.remove('border-transparent', 'text-slate-400');
+                } else {
+                    view.classList.add('hidden');
+                    tab.classList.remove('border-indigo-500', 'text-indigo-400');
+                    tab.classList.add('border-transparent', 'text-slate-400');
+                }
+            });
+        }
+
+        // Popout current tab to new window
+        document.getElementById('popout-btn').addEventListener('click', () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', currentTab);
+            window.open(url.toString(), '_blank');
+        });
+
+        // Auto switch tab if URL query parameter exists
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryTab = urlParams.get('tab');
+        if (['compressor', 'img2pdf', 'counter'].includes(queryTab)) {
+            switchTab(queryTab);
+        }
+
+        // --- TAB 1: PDF COMPRESSOR LOGIC ---
         let currentFile = null;
         let pdfDoc = null;
 
@@ -362,6 +470,131 @@
             downloadBtn.href = fileUrl;
             downloadBtn.download = currentFile.name.replace('.pdf', '_4MB壓縮版.pdf');
         }
+
+        // --- TAB 2: IMAGE TO PDF LOGIC ---
+        let loadedImages = [];
+        const imgDropZone = document.getElementById('img-drop-zone');
+        const imgInput = document.getElementById('img-input');
+        const imgPreviewSection = document.getElementById('img-preview-section');
+        const imgGrid = document.getElementById('img-grid');
+        const imgCount = document.getElementById('img-count');
+        const clearImgsBtn = document.getElementById('clear-imgs-btn');
+        const convertImgBtn = document.getElementById('convert-img-btn');
+
+        imgDropZone.addEventListener('click', () => imgInput.click());
+        imgInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleImgFiles(e.target.files);
+        });
+
+        function handleImgFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        loadedImages.push(e.target.result);
+                        renderImgGrid();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function renderImgGrid() {
+            imgGrid.innerHTML = '';
+            loadedImages.forEach((imgSrc, idx) => {
+                const div = document.createElement('div');
+                div.className = 'relative group rounded-lg overflow-hidden border border-slate-700 aspect-square bg-slate-900';
+                div.innerHTML = `
+                    <img src="${imgSrc}" class="w-full h-full object-cover">
+                    <button onclick="removeImg(${idx})" class="absolute top-1 right-1 bg-red-600/80 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold opacity-80 hover:opacity-100">✕</button>
+                `;
+                imgGrid.appendChild(div);
+            });
+            imgCount.textContent = loadedImages.length;
+            if (loadedImages.length > 0) imgPreviewSection.classList.remove('hidden');
+            else imgPreviewSection.classList.add('hidden');
+        }
+
+        window.removeImg = function(idx) {
+            loadedImages.splice(idx, 1);
+            renderImgGrid();
+        };
+
+        clearImgsBtn.addEventListener('click', () => {
+            loadedImages = [];
+            renderImgGrid();
+        });
+
+        convertImgBtn.addEventListener('click', () => {
+            if (!loadedImages.length) return;
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            loadedImages.forEach((imgData, i) => {
+                const img = new Image();
+                img.src = imgData;
+                img.onload = () => {
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    
+                    let w = img.width;
+                    let h = img.height;
+                    const ratio = Math.min(pageWidth / w, pageHeight / h);
+                    w *= ratio;
+                    h *= ratio;
+
+                    const x = (pageWidth - w) / 2;
+                    const y = (pageHeight - h) / 2;
+
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', x, y, w, h);
+
+                    if (i === loadedImages.length - 1) {
+                        pdf.save('學習歷程圖片合成檔.pdf');
+                    }
+                };
+            });
+        });
+
+        // --- TAB 3: WORD COUNTER LOGIC ---
+        const counterTextarea = document.getElementById('counter-textarea');
+        const cntTotal = document.getElementById('cnt-total');
+        const cntStatus100 = document.getElementById('cnt-status-100');
+        const cntStatus1000 = document.getElementById('cnt-status-1000');
+        const cleanTextBtn = document.getElementById('clean-text-btn');
+
+        counterTextarea.addEventListener('input', updateCount);
+
+        function updateCount() {
+            const text = counterTextarea.value;
+            // Count total non-whitespace chars or total length
+            const total = text.length;
+            cntTotal.textContent = total;
+
+            if (total <= 100) {
+                cntStatus100.textContent = '✅ 符合';
+                cntStatus100.className = 'text-xs font-bold text-emerald-400 mt-1';
+            } else {
+                cntStatus100.textContent = `⚠️ 超出 ${total - 100} 字`;
+                cntStatus100.className = 'text-xs font-bold text-amber-400 mt-1';
+            }
+
+            if (total <= 1000) {
+                cntStatus1000.textContent = '✅ 符合';
+                cntStatus1000.className = 'text-xs font-bold text-emerald-400 mt-1';
+            } else {
+                cntStatus1000.textContent = `⚠️ 超出 ${total - 1000} 字`;
+                cntStatus1000.className = 'text-xs font-bold text-amber-400 mt-1';
+            }
+        }
+
+        cleanTextBtn.addEventListener('click', () => {
+            let text = counterTextarea.value;
+            // Remove consecutive empty lines
+            text = text.replace(/\n\s*\n/g, '\n').trim();
+            counterTextarea.value = text;
+            updateCount();
+        });
     </script>
 </body>
 </html>
